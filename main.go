@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/MarcellinusAditya/go-atm-program/controllers/authcontroller"
+	"github.com/MarcellinusAditya/go-atm-program/controllers/transactioncontroller"
 	"github.com/MarcellinusAditya/go-atm-program/database"
 )
 
@@ -77,11 +78,35 @@ func main() {
 		} else {
 			switch menu {
 			case "1":
-				fmt.Println("🔍 Cek Saldo (belum diimplementasikan)")
+				fmt.Println(" ")
+				fmt.Println("== Cek Saldo ==")
+				transactioncontroller.CekSaldo(currentUser.Id)
+				fmt.Println("")
 			case "2":
-				fmt.Println("💰 Deposit (belum diimplementasikan)")
+				fmt.Println(" ")
+				fmt.Println("== Deposit ==")
+				fmt.Print("Masukkan nominal uang yang ingin dideposit (minimum Rp. 50.000): ")
+				var amount float64
+				fmt.Scanln(&amount)
+
+				if amount <50000{
+					fmt.Print("Nominal uang minimal Rp. 50.000")
+					return
+				}
+				transactioncontroller.Deposit(amount, currentUser.Id)
+
 			case "3":
-				fmt.Println("🏧 Tarik Tunai (belum diimplementasikan)")
+				fmt.Println(" ")
+				fmt.Println("== Withdraw ==")
+				fmt.Print("Masukkan nominal uang yang ingin ditarik (minimum Rp. 50.000): ")
+				var amount float64
+				fmt.Scanln(&amount)
+
+				if amount <50000{
+					fmt.Print("Nominal uang minimal Rp. 50.000")
+					return
+				}
+				transactioncontroller.Withdraw(amount, currentUser.Id)
 			case "4":
 				fmt.Println("🔁 Transfer (belum diimplementasikan)")
 			case "5":
