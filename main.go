@@ -108,7 +108,13 @@ func main() {
 				}
 				transactioncontroller.Withdraw(amount, currentUser.Id)
 			case "4":
-				fmt.Println("🔁 Transfer (belum diimplementasikan)")
+				fmt.Println(" ")
+				fmt.Println("== Transfer ==")
+				fmt.Print("Masukkan id akun yang ingin ditransfer: ")
+				var targetId int
+				fmt.Scanln(&targetId)
+				transactioncontroller.Transfer(targetId, currentUser.Id)
+
 			case "5":
 				isLoggedIn = false
 				currentUser.Id = 0

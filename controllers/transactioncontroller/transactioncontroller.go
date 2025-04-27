@@ -97,9 +97,75 @@ func Withdraw(amount float64, id int) {
 	fmt.Printf("Total saldo sekarang sebesar Rp.%.2f", finalAmount)
 
 }
-func TransferIn() {
+func Transfer(targetId int, userId int) {
+	var targetUser, user models.Account
 
-}
-func TransferOut() {
+	if err := database.DB.First(&targetUser, targetId).Error; err != nil{
+		switch err{
+		case gorm.ErrRecordNotFound:
+			fmt.Println("User tidak ditemukan")
+			return 
+		default:
+			fmt.Println("error")
+			return 
+		}
+	}
+	if err := database.DB.First(&user, userId).Error; err != nil{
+		switch err{
+		case gorm.ErrRecordNotFound:
+			fmt.Println("User tidak ditemukan")
+			return 
+		default:
+			fmt.Println("error")
+			return 
+		}
+	}
+
+	fmt.Printf("User yang ingin ditransfer atas nama %s \n", targetUser.Name)
+	fmt.Println("Masukan nominal pengiriman: (minimal Rp. 50.000)")
+	var nominal float64
+	fmt.Scanln(&nominal)
+
+	if nominal < 50000{
+		fmt.Println("nominal minimal Rp. 50.000")
+		return
+	}
+	if nominal > user.Balance{
+		fmt.Println("Saldo anda tidak mencukupi")
+		return
+	}
+
+	finalTargetAmount := targetUser.Balance+nominal
+	targetUser.Balance = finalTargetAmount
+
+	finalUserAmount := user.Balance-nominal
+	user.Balance=finalUserAmount
+
+	if database.DB.Model(&targetUser).Where("id = ?", targetId).Updates(&targetUser).RowsAffected == 0 {
+		fmt.Println("Gagal transfer")
+		return
+	}
+	if database.DB.Model(&user).Where("id = ?", userId).Updates(&user).RowsAffected == 0 {
+		fmt.Println("Gagal transfer")
+		return
+	}
+
+	targetTransaction := models.Transaction{
+		AccountID: targetId,
+		Type: "transfer_in",
+		Amount: nominal,
+	}
+
+	database.DB.Create(&targetTransaction)
+
+	userTransaction := models.Transaction{
+		AccountID: userId,
+		Type: "transfer_out",
+		Amount: nominal,
+	}
+
+	database.DB.Create(&userTransaction)
+
+	fmt.Println("Transfer berhasil")
 
 }
